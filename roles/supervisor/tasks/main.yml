@@ -18,3 +18,8 @@
 
 - name: Supervisor up and enabled
   service: name=supervisord state=started enabled=yes
+  when: ansible_os_family == "RedHat"
+
+- name: Supervisor up and enabled
+  service: name=supervisor state=started enabled=yes
+  when: ansible_os_family == "Debian"

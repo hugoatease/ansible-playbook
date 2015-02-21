@@ -4,6 +4,7 @@ user={{ item.value.user }}
 {% endif %}
 {% if 'directory' in item.value %}
 directory={{ item.value.directory }}
+environment=HOME="{{ item.value.directory }}"
 {% endif %}
 {% if 'command' in item.value %}
 command={{ item.value.command }}
