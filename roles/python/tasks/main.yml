@@ -1,0 +1,15 @@
+- name: Install Python virtualenv
+  yum: name=python-virtualenv state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install Python virtualenv
+  apt: name=python-virtualenv state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Install Python development files
+  yum: name=python-devel state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install Python development files
+  apt: name=python-dev state=latest
+  when: ansible_os_family == "Debian"

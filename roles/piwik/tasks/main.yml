@@ -1,0 +1,65 @@
+- name: Create prefix directory
+  file: path={{ piwik.prefix }} state=directory
+
+- name: Download piwik
+  get_url: url=http://builds.piwik.org/piwik-{{ piwik.version }}.tar.gz dest={{ piwik.prefix }}/piwik.zip
+
+- name: Extracting piwik
+  unarchive: copy=no src={{ piwik.prefix }}/piwik.zip dest={{ piwik.prefix }}
+
+- name: Change piwik ownership to nginx
+  file: path={{ piwik.prefix }}/piwik state=directory recurse=yes owner=apache group=apache
+
+- name: Cleaning up directory
+  file: path={{ piwik.prefix }}/{{ item }} state=absent
+  with_items:
+    - How\ to\ install\ Piwik.html
+    - piwik.zip
+
+- name: Create Piwik database
+  mysql_db: name={{ piwik.db.name }} state=present login_user={{ mysql.user }} login_password={{ mysql.password }}
+
+- name: Create Piwik user
+  mysql_user: name={{ piwik.db.user }} password={{ piwik.db.password }} state=present priv={{ piwik.db.name }}.*:ALL login_user={{ mysql.user }} login_password={{ mysql.password }}
+
+- name: Configure Piwik database
+  ignore_errors: yes
+  uri: >
+    url=http://{{ piwik.hostname }}/index.php?action=databaseSetup
+    method=POST
+    body="host=127.0.0.1&username={{ piwik.db.user }}&password={{ piwik.db.password }}&dbname={{ piwik.db.name }}&tables_prefix=piwik_&adapter=PDO%5CMYSQL&submit=Suivant+%C2%BB"
+    HEADER_Content-Type="application/x-www-form-urlencoded"
+    status_code=302
+
+- name: Create piwik tables
+  ignore_errors: yes
+  uri: >
+    url=http://{{ piwik.hostname }}/index.php?action=tablesCreation&module=Installation
+    HEADER_Referer=http://{{ piwik.hostname }}/index.php?action=databaseSetup
+
+- name: Create Piwik superuser
+  ignore_errors: yes
+  uri: >
+    url=http://{{ piwik.hostname }}/index.php?action=setupSuperUser&module=Installation
+    method=POST
+    body="login={{ piwik.superuser.user }}&password={{ piwik.superuser.password }}&password_bis={{ piwik.superuser.password }}&email={{ piwik.superuser.email }}&submit=Suivant"
+    HEADER_Content-Type="application/x-www-form-urlencoded"
+    status_code=302
+
+- name: Create first website
+  ignore_errors: yes
+  uri: >
+    url=http://{{ piwik.hostname }}/index.php?action=firstWebsiteSetup&module=Installation
+    method=POST
+    body="siteName={{ piwik.website.name }}&url={{ piwik.website.url }}&timezone={{ piwik.website.timezone }}&ecommerce=0&submit=Suivant"
+    HEADER_Content-Type="application/x-www-form-urlencoded"
+    status_code=302
+
+- name: Save tracking settings
+  ignore_errors: yes
+  uri: >
+    url=http://{{ piwik.hostname  }}/index.php?action=finished&module=Installation&site_idSite=1&site_name=Example
+    method=POST
+    body="do_not_track={{ piwik.do_not_track }}&submit=Continuer vers Piwik"
+    HEADER_Content-Type="application/x-www-form-urlencoded"
+    status_code=302

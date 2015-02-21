@@ -1,0 +1,26 @@
+- name: PostgreSQL server installation
+  yum: name=postgresql-server state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: PostgreSQL server installation
+  apt: name=postgresql state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Restart and enable PostgreSQL
+  service: name=postgresql state=restarted enabled=yes
+
+- name: Install PostgreSQL development files
+  yum: name=postgresql-devel state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install PostgreSQL development files
+  apt: name=libpq-dev state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Install Python PostgreSQL driver
+  yum: name=python-psycopg2 state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install Python PostgreSQL driver
+  apt: name=python-psycopg2 state=latest
+  when: ansible_os_family == "Debian"

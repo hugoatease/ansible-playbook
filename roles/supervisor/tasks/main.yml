@@ -1,0 +1,20 @@
+- name: Install supervisor
+  yum: name=supervisor state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install supervisor
+  apt: name=supervisor state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Configure supervisor
+  template: src=program.j2 dest=/etc/supervisord.d/{{ item.key }}.ini
+  with_dict: supervisor.programs
+  when: ansible_os_family == "RedHat"
+
+- name: Configure supervisor
+  template: src=program.j2 dest=/etc/supervisor/conf.d/{{ item.key }}.conf
+  with_dict: supervisor.programs
+  when: ansible_os_family == "Debian"
+
+- name: Supervisor up and enabled
+  service: name=supervisord state=started enabled=yes

@@ -1,0 +1,11 @@
+sentry:
+  path: /opt/sentry
+  user: sentry
+  group: sentry
+  database:
+    name: sentry
+    username: sentry
+  gunicorn:
+    host: 127.0.0.1
+    port: 9100
+    workers: 3

@@ -1,0 +1,13 @@
+[program:{{ item.key }}]
+{% if 'user' in item.value %}
+user={{ item.value.user }}
+{% endif %}
+{% if 'directory' in item.value %}
+directory={{ item.value.directory }}
+{% endif %}
+{% if 'command' in item.value %}
+command={{ item.value.command }}
+{% endif  %}
+autostart=true
+autorestart=true
+redirect_stderr=true

@@ -1,0 +1,21 @@
+- name: Installs piwik analytics
+  hosts: piwik-server
+  sudo: yes
+
+  vars:
+    piwik:
+      hostname: piwik.example.com
+      db:
+        user: piwik
+        password: changeme
+      superuser:
+        user: admin
+        password: password
+        email: admin@example.com
+      website:
+        name: Example
+        url: http://www.example.com
+        timezone: Europe/Paris
+
+  roles:
+    - piwik

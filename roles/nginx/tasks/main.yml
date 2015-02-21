@@ -1,0 +1,24 @@
+- name: Installing nginx
+  yum: name=nginx state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Installing nginx
+  apt: name=nginx state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Generating nginx configuration
+  template: src=vhost.j2 dest=/etc/nginx/conf.d/{{ item.key }}.conf
+  with_dict: nginx.vhosts
+  when: ansible_os_family == "RedHat"
+
+- name: Generating nginx configuration
+  template: src=vhost.j2 dest=/etc/nginx/sites-available/{{ item.key }}
+  with_dict: nginx.vhosts
+  when: ansible_os_family == "Debian"
+
+- name: Enable website
+  file: src=/etc/nginx/sites-available/{{ item.key }} dest=/etc/nginx/sites-enabled/{{ item.key }} state=link
+  when: ansible_os_family == "Debian"
+
+- name: Reload nginx server
+  service: name=nginx state=reloaded enabled=yes

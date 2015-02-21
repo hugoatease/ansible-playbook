@@ -1,0 +1,7 @@
+dependencies:
+  - {role: 'common'}
+  - {role: 'python'}
+  - {role: 'postgresql'}
+  - {role: 'redis'}
+  - {role: 'supervisor'}
+  - {role: 'nginx'}

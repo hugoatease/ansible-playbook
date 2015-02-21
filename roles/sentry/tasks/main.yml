@@ -1,0 +1,32 @@
+- name: Install library dependencies
+  yum: name={{ item }} state=latest
+  with_items:
+    - libxml2-devel
+    - libxslt-devel
+
+- name: Install sentry
+  pip: name=sentry[postgres] virtualenv={{ sentry.path }}
+
+- name: Create sentry user
+  user: name={{ sentry.user }} state=present shell=/usr/sbin/nologin home={{ sentry.path }}
+
+- name: Give sentry directory ownership to sentry user
+  file: path={{ sentry.path }} owner={{ sentry.user }} group={{ sentry.group }} recurse=yes
+
+- name: Generate sentry configuration
+  template: src=sentry.conf.py.j2 dest=/etc/sentry.conf.py
+
+- name: Create sentry SQL user
+  postgresql_user: name={{ sentry.database.username }} state=present
+  sudo: yes
+  sudo_user: postgres
+
+- name: Create sentry SQL database
+  postgresql_db: name={{ sentry.database.name }} owner={{ sentry.database.username }} state=present encoding=UTF8 template=template0
+  sudo: yes
+  sudo_user: postgres
+
+- name: Populate sentry database
+  command: "{{ sentry.path }}/bin/sentry --config=/etc/sentry.conf.py upgrade"
+  sudo: yes
+  sudo_user: sentry

@@ -1,0 +1,57 @@
+{% if 'upstream' in item.value %}
+upstream {{ item.key }}_server {
+  {% for directive in item.value.upstream %}
+  server {{ directive.server }};
+  {% endfor %}
+}
+{% endif %}
+
+{% for server in item.value.servers %}
+server {
+  listen {{ server.listens.http.port }} {% if server.listens.http.default %}default_server{% endif %};
+  {% if server.ssl.enabled %}
+  listen {{ server.listens.https.port }} {% if server.listens.https.default %}default_server{% endif %} ssl;
+  {% endif %}
+
+  server_name {{ server.name }};
+
+  {% if server.ssl.enabled %}
+    ssl_certificate {{ server.ssl.certificate }};
+    ssl_certificate_key {{ server.ssl.key }};
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH EDH+aRSA !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS";
+
+    {% if server.ssl.hsts %}add_header Strict-Transport-Security "max-age={{ server.ssl.hsts_max_age }}";{% endif %}
+  {% endif %}
+
+  {% if 'root' in server %}root {{ server.root }};{% endif %}
+
+  {% for location in server.locations %}
+  location {{ location.location }} {
+    {% if 'upstream_proxy' in location and location.upstream_proxy %}
+    proxy_pass http://{{ item.key }}_server;
+    proxy_redirect off;
+
+    proxy_set_header   Host              $host;
+    proxy_set_header   X-Real-IP         $remote_addr;
+    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Forwarded-Proto $scheme;
+    {% endif %}
+
+    {% if 'fastcgi_server' in location %}
+    fastcgi_pass {{ location.fastcgi_server }};
+    fastcgi_index index.php;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    include fastcgi_params;
+    {% endif %}
+
+    {% if 'index' in location %}index {{ location.index }};{% endif %}
+    {% if 'try_files' in location %}try_files {{ location.try_files }};{% endif %}
+
+    {% if 'alias' in location %}alias {{ location.alias }};{% endif %}
+    {% if 'expires' in location %}expires {{ location.expires }}{% endif %}
+  }
+  {% endfor %}
+}
+{% endfor %}

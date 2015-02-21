@@ -1,0 +1,10 @@
+- name: Install redis datastore
+  yum: name=redis state=latest
+  when: ansible_os_family == "RedHat"
+
+- name: Install redis datastore
+  apt: name=redis-server state=latest
+  when: ansible_os_family == "Debian"
+
+- name: Redis running and enabled
+  service: name=redis state=started enabled=yes

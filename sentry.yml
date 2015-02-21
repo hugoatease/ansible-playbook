@@ -1,0 +1,12 @@
+- name: Installs sentry logging platform
+  hosts: sentry-server
+  sudo: yes
+
+  vars:
+    sentry:
+      url: http://sentry.example.com
+      email: admin@example.com
+      secret: changeme
+
+  roles:
+    - sentry
