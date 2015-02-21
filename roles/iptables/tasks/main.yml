@@ -1,3 +1,7 @@
+- name: Install iptables
+  apt: name=iptables state=latest
+  when: ansible_os_family == "Debian"
+
 - name: Writing iptables configuration
   template: src=iptables.nat.rules.j2 dest=/etc/iptables.nat.rules
 
