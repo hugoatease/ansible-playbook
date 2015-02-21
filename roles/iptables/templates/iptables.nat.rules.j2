@@ -1,0 +1,5 @@
+*nat
+{% for network in iptables.nat.networks  %}
+-A POSTROUTING -s {{ network.ip }}/{{ network.cidr }} -o {{ iptables.nat.interface }} -j MASQUERADE
+{% endfor %}
+COMMIT

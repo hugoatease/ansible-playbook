@@ -1,0 +1,5 @@
+- name: Writing iptables configuration
+  template: src=iptables.nat.rules.j2 dest=/etc/iptables.nat.rules
+
+- name: Apply iptables configuration
+  shell: "iptables-restore < /etc/iptables.nat.rules"
