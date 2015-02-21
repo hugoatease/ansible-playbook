@@ -26,7 +26,9 @@ server {
   {% endif %}
 
   {% if 'root' in server %}root {{ server.root }};{% endif %}
+  {% if 'redirect' in server %}return 301 $scheme://{{ server.redirect }}$request_uri;{% endif %}
 
+  {% if 'locations' in server %}
   {% for location in server.locations %}
   location {{ location.location }} {
     {% if 'upstream_proxy' in location and location.upstream_proxy %}
@@ -53,5 +55,6 @@ server {
     {% if 'expires' in location %}expires {{ location.expires }}{% endif %}
   }
   {% endfor %}
+  {% endif  %}
 }
 {% endfor %}

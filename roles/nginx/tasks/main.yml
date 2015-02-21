@@ -19,6 +19,7 @@
 - name: Enable website
   file: src=/etc/nginx/sites-available/{{ item.key }} dest=/etc/nginx/sites-enabled/{{ item.key }} state=link
   when: ansible_os_family == "Debian"
+  with_dict: nginx.vhosts
 
 - name: Reload nginx server
   service: name=nginx state=reloaded enabled=yes
