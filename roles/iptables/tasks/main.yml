@@ -7,3 +7,4 @@
 
 - name: Apply iptables configuration
   shell: "iptables-restore < /etc/iptables.nat.rules"
+  ignore_errors: yes

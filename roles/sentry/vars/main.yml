@@ -1,0 +1,10 @@
+supervisor:
+  programs:
+    sentry_web:
+      user: "{{ sentry.user }}"
+      directory: "{{ sentry.path }}"
+      command: "{{ sentry.path }}/bin/sentry --config=/etc/sentry.conf.py start"
+    sentry_worker:
+      user: "{{ sentry.user }}"
+      directory: "{{ sentry.path }}"
+      command: "{{ sentry.path }}/bin/sentry --config=/etc/sentry.conf.py celery worker -B"

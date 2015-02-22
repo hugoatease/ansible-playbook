@@ -30,3 +30,9 @@
   command: "{{ sentry.path }}/bin/sentry --config=/etc/sentry.conf.py upgrade"
   sudo: yes
   sudo_user: sentry
+
+- name: Start sentry supervisor processes
+  supervisorctl: name={{ item }} state=restarted
+  with_items:
+    - sentry_web
+    - sentry_worker
