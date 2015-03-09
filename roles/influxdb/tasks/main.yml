@@ -1,0 +1,14 @@
+- name: Install InfluxDB
+  yum: name=https://s3.amazonaws.com/influxdb/influxdb-{{ influxdb.version }}.{{ ansible_architecture }}.rpm state=present
+
+- name: Configure InfluxDB
+  template: src=config.toml.j2 dest=/opt/influxdb/shared/config.toml
+
+- name: Restart InfluxDB service
+  service: name=influxdb state=restarted
+
+- name: Wait for InfluxDB API to become available
+  wait_for: port=8086 state=present
+
+- name: Setting root password
+  uri: 'url=http://localhost:8086/cluster_admins/root?u=root&p=root method=POST body={\"password\":\"{{ influxdb.root_password }}\"} status_code=200'

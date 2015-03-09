@@ -1,0 +1,16 @@
+influxdb:
+  version: 0.8.8-1
+  root_password: root
+  reporting: no
+  log_level: info
+  bind: 127.0.0.1
+  admin_port: 8083
+  api_port: 8086
+  graphite_enabled: no
+  graphite_bind: 127.0.0.1
+  graphite_port: 2003
+  graphite_db: graphite
+  collectd_enabled: no
+  collectd_address: 127.0.0.1
+  collectd_port: 25826
+  collectd_db: collectd
