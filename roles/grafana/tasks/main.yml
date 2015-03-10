@@ -10,5 +10,8 @@
 - name: Cleaning up temporary files
   file: path={{ grafana.prefix }}/grafana-{{ grafana.version }}.tar.gz state=absent
 
+- name: Change grafana ownership to nginx
+  file: path={{ grafana.prefix }}/grafana-{{ grafana.version }} state=directory recurse=yes owner=apache group=apache
+
 - name: Create Grafana configuration
   template: src=config.js.j2 dest={{ grafana.prefix }}/grafana-{{ grafana.version }}/config.js
