@@ -12,3 +12,9 @@
 
 - name: Setting root password
   uri: 'url=http://localhost:8086/cluster_admins/root?u=root&p=root method=POST body={\"password\":\"{{ influxdb.root_password }}\"} status_code=200'
+  ignore_errors: yes
+
+- name: Create databases
+  uri: url=http://localhost:8086/cluster/database_configs/{{ item.name }}?u=root&p={{ influxdb.root_password }} method=POST body='{{ lookup("template", "../templates/db.json.j2") }}' status_code=201
+  with_items: influxdb.databases
+  ignore_errors: yes

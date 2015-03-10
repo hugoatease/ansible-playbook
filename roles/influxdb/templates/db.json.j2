@@ -1,0 +1,14 @@
+{
+  "spaces": [
+{% for space in item.spaces %}
+    {
+      "name":"{{ space.name }}",
+      "regEx":"{{ space.regex }}",
+      "retentionPolicy":"{{ space.retention }}",
+      "shardDuration":"{{ space.duration }}",
+      "replicationFactor":{{ space.factor }},
+      "split":{{ space.split }}
+    }{% if not loop.last %},{% endif %}
+{% endfor %}
+  ]
+}
