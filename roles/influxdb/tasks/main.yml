@@ -8,13 +8,18 @@
   service: name=influxdb state=restarted
 
 - name: Wait for InfluxDB API to become available
-  wait_for: port=8086 state=present
+  wait_for: port={{ influxdb.api_port }} state=present
 
 - name: Setting root password
-  uri: 'url=http://localhost:8086/cluster_admins/root?u=root&p=root method=POST body={\"password\":\"{{ influxdb.root_password }}\"} status_code=200'
+  uri: 'url=http://{{ influxdb.bind }}:{{ influxdb.api_port }}/cluster_admins/root?u=root&p=root method=POST body={\"password\":\"{{ influxdb.root_password }}\"} status_code=200'
   ignore_errors: yes
 
 - name: Create databases
-  uri: url=http://localhost:8086/cluster/database_configs/{{ item.name }}?u=root&p={{ influxdb.root_password }} method=POST body='{{ lookup("template", "../templates/db.json.j2") }}' status_code=201
+  uri: url=http://{{ influxdb.bind }}:{{ influxdb.api_port }}/cluster/database_configs/{{ item.name }}?u=root&p={{ influxdb.root_password }} method=POST body='{{ lookup("template", "../templates/db.json.j2") }}' status_code=201
   with_items: influxdb.databases
+  ignore_errors: yes
+
+- name: Create users
+  uri: url=http://{{ influxdb.bind }}:{{ influxdb.api_port }}/db/{{ item.db }}/users?u=root&p={{ influxdb.root_password }} method=POST status_code=200 body='{"name":"{{ item.user }}","password":"{{ item.password }}"}'
+  with_items: influxdb.users
   ignore_errors: yes

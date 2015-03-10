@@ -21,6 +21,11 @@ influxdb:
         - name: default
           retention: inf
           duration: 7d
-          regex: "/.*/"
+          regex: /.*/
           factor: 1
           split: 1
+
+  users:
+    - user: collectd
+      password: collectd
+      db: collectd
