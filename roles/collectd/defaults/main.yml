@@ -16,7 +16,7 @@ collectd:
     enable: yes
     report: yes
 
-    listen: yes
+    listen: no
     listen_host: 0.0.0.0
     listen_port: 25826
     listen_encrypt: yes

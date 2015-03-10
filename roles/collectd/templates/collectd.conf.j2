@@ -33,7 +33,7 @@ LoadPlugin network
 
   {% if collectd.network.servers %}
   {% for server in collectd.network.servers %}
-    <Server "{{ server.host }}:{{ server.port }}">
+    <Server "{{ server.host }}" "{{ server.port }}">
       {% if server.encrypt %}
         SecurityLevel Encrypt
         Username {{ server.username }}
