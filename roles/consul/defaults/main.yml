@@ -1,0 +1,14 @@
+consul_version: 0.5.0
+consul_platform: linux_amd64
+consul_user: consul
+consul_datacenter: Example
+consul_binary_path: /usr/local/bin
+consul_ui_path: /usr/local/share/consul-web
+consul_data_path: /var/local/lib/consul
+consul_server_mode: yes
+consul_server_nodes: 1
+consul_dns: 127.0.0.1
+consul_http: 127.0.0.1
+consul_rpc: 127.0.0.1
+consul_bind: 0.0.0.0
+consul_key: ta609RBaLu0SbL4pyorsBA==

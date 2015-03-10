@@ -1,0 +1,58 @@
+- name: Download Consul
+  get_url: >
+    url=https://dl.bintray.com/mitchellh/consul/{{ consul_version }}_{{ consul_platform }}.zip
+    dest=/tmp
+
+- name: Create Consul user
+  user: >
+    name={{ consul_user }}
+    state=present
+    shell=/usr/sbin/nologin
+    home={{ consul_data_path }}
+    createhome=no
+
+- name: Create Consul data directory
+  file: >
+    path={{ consul_data_path }}
+    state=directory
+    owner={{ consul_user }}
+    mode=0750
+
+- name: Extracting Consul binary
+  unarchive: >
+    copy=no
+    src=/tmp/{{ consul_version }}_{{ consul_platform }}.zip
+    dest={{ consul_binary_path }}
+
+- name: Download Consul UI
+  get_url: >
+    url=https://dl.bintray.com/mitchellh/consul/{{ consul_version }}_web_ui.zip
+    dest=/tmp
+
+- name: Create Consul UI directory
+  file: path={{ consul_ui_path }} state=directory
+
+- name: Extracting Consul UI
+  unarchive: >
+    copy=no
+    src=/tmp/{{ consul_version }}_web_ui.zip
+    dest={{ consul_ui_path }}
+
+- name: Cleaning up temporary files
+  file: path=/tmp/{{ item }} state=absent
+  with_items:
+    - "{{ consul_version }}_{{ consul_platform }}.zip"
+    - "{{ consul_version }}_web_ui.zip"
+
+- name: Create Consul configuration path
+  file: path=/etc/consul.d state=directory
+
+- name: Generate Consul configuration
+  template: >
+    src=consul.json.j2
+    dest=/etc/consul.d/consul.json 
+    owner={{ consul_user }}
+    mode=0600
+
+- name: Start consul supervisor process
+  supervisorctl: name=consul state=restarted

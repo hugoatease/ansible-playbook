@@ -1,0 +1,6 @@
+supervisor:
+  programs:
+    consul:
+      user: "{{ consul_user }}"
+      directory: "{{ consul_data_path }}"
+      command: "{{ consul_binary_path }}/consul agent --config-dir=/etc/consul.d"

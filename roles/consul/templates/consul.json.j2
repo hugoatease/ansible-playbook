@@ -1,0 +1,18 @@
+{
+  {% if consul_server_mode %}
+  "bootstrap_expect": {{ consul_server_nodes }},
+  "server": true,
+  {% endif %}
+  "addresses": {
+    "dns": "{{ consul_dns }}",
+    "http": "{{ consul_http }}",
+    "rpc": "{{ consul_rpc }}"
+  },
+  "bind_addr": "{{ consul_bind }}",
+  "datacenter": "{{ consul_datacenter }}",
+  "data_dir": "{{ consul_data_path }}",
+  "encrypt": "{{ consul_key }}",
+  "enable_syslog": true,
+  "ui_dir": "{{ consul_ui_path }}/dist"
+}
+
