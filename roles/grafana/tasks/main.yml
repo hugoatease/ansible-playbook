@@ -1,0 +1,14 @@
+- name: Create prefix directory
+  file: path={{ grafana.prefix }} state=directory
+
+- name: Download Grafana
+  get_url: url=http://grafanarel.s3.amazonaws.com/grafana-{{ grafana.version }}.tar.gz dest={{ grafana.prefix }}
+
+- name: Extracting Grafana
+  unarchive: copy=no src={{ grafana.prefix }}/grafana-{{ grafana.version }}.tar.gz dest={{ grafana.prefix }}
+
+- name: Cleaning up temporary files
+  file: path={{ grafana.prefix }}/grafana-{{ grafana.version }}.tar.gz state=absent
+
+- name: Create Grafana configuration
+  template: src=config.js.j2 dest={{ grafana.prefix }}/grafana-{{ grafana.version }}/config.js
