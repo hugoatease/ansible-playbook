@@ -7,17 +7,3 @@ grafana:
   unsaved_changes_warning: yes
   playlist_timespan: 1m
   window_title: 'Grafana - '
-
-  datasources:
-    - name: grafana
-      type: influxdb
-      url: http://127.0.0.1:8086/db/grafana
-      username: grafana
-      password: grafana
-      grafanaDB: yes
-
-    - name: collectd
-      type: influxdb
-      url: http://127.0.0.1:8086/db/collectd
-      username: grafana
-      password: grafana
