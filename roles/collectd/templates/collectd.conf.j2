@@ -1,0 +1,46 @@
+Hostname "{{ collectd.hostname }}"
+
+LoadPlugin syslog
+<Plugin syslog>
+        LogLevel info
+</Plugin>
+
+{% for plugin in collectd.plugins %}
+LoadPlugin {{ plugin }}
+{% endfor %}
+
+{% if collectd.network.enable %}
+LoadPlugin network
+<Plugin network>
+  {% if collectd.network.report %}
+    ReportStats true
+  {% else %}
+    ReportStats false
+  {% endif %}
+
+  {% if collectd.network.listen %}
+    <Listen "{{ collectd.network.listen_host }}:{{ collectd.network.listen_port }}">
+      {% if collectd.network.listen_encrypt %}
+        SecurityLevel Encrypt
+        {% if ansible_os_family == "Debian" %}
+          AuthFile "/etc/collectd/collectd.auth"
+        {% else %}
+          AuthFile "/etc/collectd.auth"
+        {% endif %}
+      {% endif %}
+    </Listen>
+  {% endif %}
+
+  {% if collectd.network.servers %}
+  {% for server in collectd.network.servers %}
+    <Server "{{ server.host }}:{{ server.port }}">
+      {% if server.encrypt %}
+        SecurityLevel Encrypt
+        Username {{ server.username }}
+        Password {{ server.password }}
+      {% endif %}
+    </Server>
+  {% endfor %}
+  {% endif %}
+</Plugin>
+{% endif %}

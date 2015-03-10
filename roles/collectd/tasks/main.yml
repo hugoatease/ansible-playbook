@@ -1,0 +1,25 @@
+- name: Install CollectD
+  yum: name=collectd state=latest
+
+- name: Create CollectD configuration
+  template: src=collectd.conf.j2 dest=/etc/collectd.conf
+  when: ansible_os_family == "RedHat"
+
+- name: Create CollectD configuration
+  template: src=collectd.conf.j2 dest=/etc/collectd/collectd.conf
+  when: ansible_os_family == "Debian"
+
+- name: Create CollectD authentication file
+  template: src=collectd.auth.j2 dest=/etc/collectd.auth
+  when: 
+    - collectd.network.listen_encrypt
+    - ansible_os_family == "RedHat"
+
+- name: Create CollectD authentication file
+  template: src=collectd.auth.j2 dest=/etc/collectd/collectd.auth
+  when: 
+    - collectd.network.listen_encrypt
+    - ansible_os_family == "Debian"
+
+- name: Restart CollectD service
+  service: name=collectd state=restarted
